@@ -12,8 +12,8 @@ class User(AbstractUser):
 
     username = models.CharField(u'用户名', max_length=255, unique=True)
     email = models.EmailField(u'邮箱', max_length=255, blank=True)
-    stuid = models.TextField(u'学号', max_length=10, blank=False)
-    stuname = models.TextField(u'姓名', max_length=255, blank=True)
+    stuid = models.CharField(u'学号', max_length=10, blank=False)
+    stuname = models.CharField(u'姓名', max_length=255, blank=True)
 
     GROUP_MEMBER = 0
     GROUP_LEADER = 1
@@ -51,6 +51,7 @@ class HomeWork(models.Model):
     )
 
     id = models.BigAutoField(primary_key=True, editable=False)
+    title = models.CharField(u'标题', blank=True, max_length=255)
     scorerules = models.TextField(u'得分规则', blank=True)
     author = models.ForeignKey(User, related_name='homework_author_user', verbose_name='发布者', on_delete=models.CASCADE)
     createat = models.DateTimeField(u'创建时间', auto_now_add=True)
@@ -71,6 +72,7 @@ class Group(models.Model):
     )
 
     id = models.BigAutoField(primary_key=True, editable=False)
+
     leader = models.ForeignKey(User, related_name='group_leader_user', verbose_name='队长', on_delete=models.CASCADE)
     grouptype = models.PositiveSmallIntegerField(verbose_name="组队类型", choices=TYPE_CHOICES, default=DOUBLE)
     members = models.TextField(u'组员列表', blank=True)
@@ -84,6 +86,7 @@ class Judgement(models.Model):
         ordering = ['-createat']
 
     id = models.BigAutoField(primary_key=True, editable=False)
+    homework = models.ForeignKey(HomeWork, related_name='judgement_homework', verbose_name='对应作业', on_delete=models.CASCADE, null=True)
     group = models.ForeignKey(Group, related_name='judgement_group', verbose_name='对应组', on_delete=models.CASCADE, null=True)
     student = models.ForeignKey(User, related_name='judgement_user', verbose_name='对应学生', on_delete=models.CASCADE, null=True)
     judger = models.ForeignKey(User, related_name='judger_user', verbose_name='评分人', on_delete=models.CASCADE)
