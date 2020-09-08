@@ -1,19 +1,24 @@
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 
+from backend.filters import GroupFilter
 from backend.serializers.groupserializers import *
 from backend.models import Group
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 import json
 
 
-class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin):
+class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     serializer_class = GroupInfoSerializer
     queryset = Group.objects.all()
     permission_classes = [IsAuthenticated, ]
+    filter_class = GroupFilter
+    filter_backend = (SearchFilter,)
 
-    def create(self, request, *args, **kwargs):
+    @action(methods=['POST'], url_path='create', detail=False)
+    def _create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -31,13 +36,12 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Create
                 }, status=status.HTTP_200_OK)
 
         self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
         return Response(
             {
                 'success': True,
                 'message': '创建成功',
                 'data': serializer.data
-            }, status=status.HTTP_201_CREATED, headers=headers
+            }, status=status.HTTP_201_CREATED
         )
 
     def perform_create(self, serializer):

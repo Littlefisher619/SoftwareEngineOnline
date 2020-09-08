@@ -6,18 +6,19 @@ from rest_framework.response import Response
 from backend.serializers.userserializers import *
 
 
-class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
+class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
     serializer_classes_by_action = {
         'updatepassword':  UserUpdatePasswordSerializer,
     }
     permission_classes = [IsAuthenticated, ]
+    queryset = User.objects.all()
 
     def get_serializer_class(self):
         serializer_class = self.serializer_classes_by_action.get(self.action, UserInfoSerializer)
         return serializer_class
 
     @action(methods=['GET'], detail=False, name='我的个人资料')
-    def myprofile(self, request):
+    def me(self, request):
         instance = self.request.user
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
