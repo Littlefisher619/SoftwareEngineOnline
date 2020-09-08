@@ -21,5 +21,12 @@ class HomeWorkAdmin(admin.ModelAdmin):
     list_filter = ['homeworktype', ]
 
 
+class GroupAdmin(admin.ModelAdmin):
+    list_per_page = 10
+    list_display = ['id', 'grouptype', 'leader', ]
+    list_filter = ['grouptype', 'leader',]
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(HomeWork, HomeWorkAdmin)
+admin.site.register(Group, GroupAdmin)

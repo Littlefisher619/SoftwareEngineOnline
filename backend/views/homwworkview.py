@@ -10,7 +10,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
         'list': [IsAuthenticated, ],
     }
     serializer_class = HomeWorkSerializer
-    queryset = HomeWork.objects
+    queryset = HomeWork.objects.all()
 
     def get_permissions(self):
         return [permission() for permission in self.permission_classes_by_action.get(self.action, [IsAuthenticated])]
