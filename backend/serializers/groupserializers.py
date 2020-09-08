@@ -7,8 +7,9 @@ from .userserializers import UserInfoSerializer
 
 
 class GroupInfoSerializer(serializers.ModelSerializer):
-    members = JsonSerializer(label='组员', read_only=True)
-    leader = UserInfoSerializer(label='组长', read_only=True)
+    members = JsonSerializer(label='队员', read_only=True)
+    leader = UserInfoSerializer(label='队长', read_only=True)
+    groupname = CharField(min_length=5, label='队伍名称')
 
     class Meta:
         model = Group
