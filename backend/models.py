@@ -75,6 +75,7 @@ class Group(models.Model):
 
     leader = models.ForeignKey(User, related_name='group_leader_user', verbose_name='队长', on_delete=models.CASCADE)
     grouptype = models.PositiveSmallIntegerField(verbose_name="组队类型", choices=TYPE_CHOICES, default=DOUBLE)
+    groupname = models.CharField(u'队伍名', max_length=255, blank=True)
     members = models.TextField(u'组员列表', blank=True)
     createat = models.DateTimeField(u'创建时间', auto_now_add=True)
 
@@ -89,6 +90,7 @@ class Judgement(models.Model):
     homework = models.ForeignKey(HomeWork, related_name='judgement_homework', verbose_name='对应作业', on_delete=models.CASCADE, null=True)
     group = models.ForeignKey(Group, related_name='judgement_group', verbose_name='对应组', on_delete=models.CASCADE, null=True)
     student = models.ForeignKey(User, related_name='judgement_user', verbose_name='对应学生', on_delete=models.CASCADE, null=True)
+    scoredatail = models.TextField(u'评分详情', blank=True)
     judger = models.ForeignKey(User, related_name='judger_user', verbose_name='评分人', on_delete=models.CASCADE)
     createat = models.DateTimeField(u'创建时间', auto_now_add=True)
 
