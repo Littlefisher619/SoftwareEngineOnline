@@ -14,7 +14,6 @@ class JudgementInfoSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         super().validate(attrs)
-        print(attrs)
         if attrs.get('homework') is None:
             raise serializers.ValidationError("需指定一个作业才能进行评分")
 
@@ -23,12 +22,16 @@ class JudgementInfoSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("作业为单人作业时，必须指定student关键字以创建评分对象")
             if attrs.get('group'):
                 raise serializers.ValidationError("作业为单人作业时，只能指定student关键字")
+            if Judgement.objects.filter(homework=attrs.get('homework'), student=attrs.get('student')):
+                raise serializers.ValidationError("对当前学生的这一项单人作业评分已经存在")
 
         if attrs.get('homework').homeworktype in [HomeWork.GROUP, HomeWork.DOUBLE]:
             if not attrs.get('group'):
                 raise serializers.ValidationError("作业为结对/团队作业时，必须指定group关键字以创建评分对象")
             if attrs.get('student'):
                 raise serializers.ValidationError("作业为结对/团队作业时，只能指定group关键字")
+            if Judgement.objects.filter(homework=attrs.get('homework'), group=attrs.get('group')):
+                raise serializers.ValidationError("对当前队伍的这一项结对/团队作业评分已经存在")
         return attrs
 
     class Meta:

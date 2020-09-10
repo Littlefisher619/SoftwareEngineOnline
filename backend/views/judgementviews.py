@@ -1,8 +1,10 @@
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
+from backend.filters import JudgementFilter
 from backend.models import Judgement, User
 from backend.serializers.judgementserializers import *
 
@@ -11,6 +13,8 @@ class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
     serializer_class = JudgementInfoSerializer
     queryset = Judgement.objects.all()
     permission_classes = [IsAuthenticated, ]
+    filter_class = JudgementFilter
+    filter_backend = (SearchFilter,)
 
     @action(methods=['POST'], url_path='create', detail=False)
     def _create(self, request):
@@ -22,7 +26,6 @@ class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # user, group = student,
         self.perform_create(serializer)
         return Response(
             {
