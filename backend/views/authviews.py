@@ -30,7 +30,6 @@ class LoginView(viewsets.GenericViewSet):
         if serializer.is_valid():
             user = serializer.validated_data.get('user')
             token = serializer.validated_data.get('token')
-            print(serializer.validated_data)
             response_data = {
                 'token': token,
                 'username': user.username,

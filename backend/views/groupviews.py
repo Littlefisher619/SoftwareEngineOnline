@@ -36,6 +36,7 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
                     'message': '你已经是当前队伍类型的某个组的组员，不能再创建新的队伍'
                 }, status=status.HTTP_200_OK)
 
+
         self.perform_create(serializer)
         return Response(
             {

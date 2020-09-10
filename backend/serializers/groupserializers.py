@@ -8,7 +8,7 @@ import json
 
 
 class GroupInfoSerializer(serializers.ModelSerializer):
-    members = JsonSerializer(write_only=True)
+    members = serializers.HiddenField(label='组员列表', write_only=True, default=[])
     member_detail = serializers.SerializerMethodField()
     leader = UserInfoSerializer(label='队长', read_only=True)
     groupname = CharField(min_length=5, label='队伍名称')
@@ -20,7 +20,15 @@ class GroupInfoSerializer(serializers.ModelSerializer):
                 member_list.append(UserInfoSerializer(User.objects.get(pk=i)).data)
         return member_list
 
+    # def validate(self, data):
+    #     super().validate(data)
+    #     if Group.objects.filter(groupname=data.get('groupname')).exists():
+    #         raise serializers.ValidationError(
+    #             '组名已存在',
+    #             code='login_invalid',
+    #         )
+
     class Meta:
         model = Group
         fields = ('id', 'leader', 'grouptype', 'members', 'groupname', 'member_detail')
-        read_only_fields = ('id', 'leader', 'member_detail', )
+        read_only_fields = ('id', 'leader', 'member_detail', 'members')
