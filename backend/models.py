@@ -88,8 +88,8 @@ class Judgement(models.Model):
 
     id = models.BigAutoField(primary_key=True, editable=False)
     homework = models.ForeignKey(HomeWork, related_name='judgement_homework', verbose_name='对应作业', on_delete=models.CASCADE, null=True)
-    group = models.ForeignKey(Group, related_name='judgement_group', verbose_name='对应组', on_delete=models.CASCADE, null=True)
-    student = models.ForeignKey(User, related_name='judgement_user', verbose_name='对应学生', on_delete=models.CASCADE, null=True)
+    group = models.ForeignKey(Group, related_name='judgement_group', verbose_name='对应组', on_delete=models.CASCADE, blank=True, null=True)
+    student = models.ForeignKey(User, related_name='judgement_user', verbose_name='对应学生', on_delete=models.CASCADE, blank=True, null=True)
     scoredatail = models.TextField(u'评分详情', blank=True)
     judger = models.ForeignKey(User, related_name='judger_user', verbose_name='评分人', on_delete=models.CASCADE)
     createat = models.DateTimeField(u'创建时间', auto_now_add=True)
