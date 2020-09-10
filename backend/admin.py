@@ -24,9 +24,16 @@ class HomeWorkAdmin(admin.ModelAdmin):
 class GroupAdmin(admin.ModelAdmin):
     list_per_page = 10
     list_display = ['id', 'grouptype', 'leader', ]
-    list_filter = ['grouptype', 'leader',]
+    list_filter = ['grouptype', 'leader', ]
+
+
+class JudgementAdmin(admin.ModelAdmin):
+    list_per_page = 10
+    list_display = ['id', 'student', 'group', 'judger', ]
+    list_filter = ['judger', ]
 
 
 admin.site.register(User, UserAdmin)
 admin.site.register(HomeWork, HomeWorkAdmin)
 admin.site.register(Group, GroupAdmin)
+admin.site.register(Judgement, JudgementAdmin)
