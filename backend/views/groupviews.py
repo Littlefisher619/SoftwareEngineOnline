@@ -7,6 +7,7 @@ from backend.filters import GroupFilter
 from backend.serializers.groupserializers import *
 from backend.models import Group
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from backend.models import User
 import json
 
 
