@@ -57,6 +57,9 @@ class HomeWork(models.Model):
     createat = models.DateTimeField(u'创建时间', auto_now_add=True)
     homeworktype = models.PositiveSmallIntegerField(verbose_name="作业类型", choices=TYPE_CHOICES, default=SIGNGLE)
 
+    def __str__(self):
+        return "HomeWork(%d) - %s" % (self.id, self.title)
+
 
 class Group(models.Model):
     class Meta:
@@ -79,6 +82,9 @@ class Group(models.Model):
     members = models.TextField(u'组员列表', blank=True)
     createat = models.DateTimeField(u'创建时间', auto_now_add=True)
 
+    def __str__(self):
+        return "Group(%d, %s) - %s" % (self.id, self.leader.username, self.groupname)
+
 
 class Judgement(models.Model):
     class Meta:
@@ -93,6 +99,9 @@ class Judgement(models.Model):
     scoredatail = models.TextField(u'评分详情', blank=True)
     judger = models.ForeignKey(User, related_name='judger_user', verbose_name='评分人', on_delete=models.CASCADE)
     createat = models.DateTimeField(u'创建时间', auto_now_add=True)
+
+    def __str__(self):
+        return "Group(%d, %s) - %s" % (self.id, self.judger.username, self.homework)
 
 
 class Rate(models.Model):
