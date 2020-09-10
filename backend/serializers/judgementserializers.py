@@ -10,7 +10,7 @@ from .jsonserializer import JsonSerializer
 class JudgementInfoSerializer(serializers.ModelSerializer):
     scoredatail = JsonSerializer(label='评分详情')
     judger = UserInfoSerializer(label='评分员', read_only=True)
-    homework = HomeWorkSerializer(label='作业')
+    # homework = HomeWorkSerializer(label='作业')
 
     def validate(self, attrs):
         super().validate(attrs)
