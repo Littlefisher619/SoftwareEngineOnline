@@ -21,7 +21,7 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
             return Response({
                     'success': False,
                     'message': '你走错地方惹，这儿啥也没有~'
-                }, status=status.HTTP_200_OK)
+                }, status=status.HTTP_403_FORBIDDEN)
         return super().retrieve(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
@@ -29,7 +29,7 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
             return Response({
                     'success': False,
                     'message': '你走错地方惹，这儿啥也没有~'
-                }, status=status.HTTP_200_OK)
+                }, status=status.HTTP_403_FORBIDDEN)
         return super().list(request, *args, **kwargs)
 
     def get_serializer_class(self):
@@ -75,7 +75,7 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
             return Response({
                     'success': False,
                     'message': '你走错地方惹，这儿啥也没有~'
-                }, status=status.HTTP_200_OK)
+                }, status=status.HTTP_403_FORBIDDEN)
         return Response(
             self.__get_group_info_json_data(self.get_object()),
             status=status.HTTP_200_OK

@@ -29,7 +29,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
             return Response({
                     'success': False,
                     'message': '你走错地方惹，这儿啥也没有~'
-                }, status=status.HTTP_200_OK)
+                }, status=status.HTTP_403_FORBIDDEN)
 
         homework = self.get_object()
         tasklist = []
