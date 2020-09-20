@@ -36,7 +36,6 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
                     'message': '你已经是当前队伍类型的某个组的组员，不能再创建新的队伍'
                 }, status=status.HTTP_200_OK)
 
-
         self.perform_create(serializer)
         return Response(
             {
@@ -49,6 +48,10 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
     def perform_create(self, serializer):
         serializer.validated_data['leader'] = self.request.user
         serializer.validated_data['members'] = json.dumps([self.request.user.pk,])
+        if serializer.validated_data['grouptype'] == Group.GROUP:
+            self.request.user.role = User.GROUP_LEADER
+            self.request.user.save()
+
         serializer.save()
 
     @action(methods=['GET'], detail=True, name='加入')
