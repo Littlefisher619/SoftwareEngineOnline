@@ -13,6 +13,22 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
     permission_classes = [IsAuthenticated, ]
     queryset = User.objects.all()
 
+    def retrieve(self, request, *args, **kwargs):
+        if self.request.user.role != User.TEST_GROUP and self.request.user != self.get_object():
+            return Response({
+                    'success': False,
+                    'message': '你走错地方惹，这儿啥也没有~'
+                }, status=status.HTTP_200_OK)
+        super().retrieve(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        if self.request.user.role != User.TEST_GROUP:
+            return Response({
+                    'success': False,
+                    'message': '你走错地方惹，这儿啥也没有~'
+                }, status=status.HTTP_200_OK)
+        super().list(request, *args, **kwargs)
+
     def get_serializer_class(self):
         serializer_class = self.serializer_classes_by_action.get(self.action, UserInfoSerializer)
         return serializer_class
