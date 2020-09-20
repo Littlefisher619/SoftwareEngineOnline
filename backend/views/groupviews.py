@@ -48,7 +48,7 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
     def perform_create(self, serializer):
         serializer.validated_data['leader'] = self.request.user
         serializer.validated_data['members'] = json.dumps([self.request.user.pk,])
-        if serializer.validated_data['grouptype'] == Group.GROUP:
+        if serializer.validated_data['grouptype'] == Group.GROUP and self.request.user.role == User.GROUP_MEMBER:
             self.request.user.role = User.GROUP_LEADER
             self.request.user.save()
 
