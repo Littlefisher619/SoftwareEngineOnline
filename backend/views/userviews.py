@@ -19,7 +19,7 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
                     'success': False,
                     'message': '你走错地方惹，这儿啥也没有~'
                 }, status=status.HTTP_200_OK)
-        super().retrieve(request, *args, **kwargs)
+        return super().retrieve(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
         if self.request.user.role != User.TEST_GROUP:
@@ -27,7 +27,7 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
                     'success': False,
                     'message': '你走错地方惹，这儿啥也没有~'
                 }, status=status.HTTP_200_OK)
-        super().list(request, *args, **kwargs)
+        return super().list(request, *args, **kwargs)
 
     def get_serializer_class(self):
         serializer_class = self.serializer_classes_by_action.get(self.action, UserInfoSerializer)
