@@ -27,7 +27,7 @@ class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
             return Response({
                     'success': False,
                     'message': '只能修改自己创建的评分'
-                }, status=status.HTTP_200_OK)
+                }, status=status.HTTP_403_FORBIDDEN)
         return super().update(request, *args, **kwargs)
 
     @action(methods=['POST'], url_path='create', detail=False)
@@ -36,7 +36,7 @@ class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
             return Response({
                     'success': False,
                     'message': '不是测试组的成员不能创建评分诶'
-                }, status=status.HTTP_200_OK)
+                }, status=status.HTTP_403_FORBIDDEN)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
