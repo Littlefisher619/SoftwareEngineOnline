@@ -12,8 +12,8 @@ class JudgementUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Judgement
-        fields = ('id', 'scoredatail', 'creatat',)
-        read_only_fields = ('id', 'creatat',)
+        fields = ('id', 'scoredatail', 'createat',)
+        read_only_fields = ('id', 'createat',)
 
 
 class JudgementInfoSerializer(serializers.ModelSerializer):
@@ -46,4 +46,4 @@ class JudgementInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Judgement
         fields = ('id', 'student', 'group', 'judger', 'homework', 'scoredatail', 'createat', )
-        read_only_fields = ('id', 'creatat', 'judger', )
+        read_only_fields = ('id', 'createat', 'judger', )
