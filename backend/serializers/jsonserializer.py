@@ -22,7 +22,7 @@ class JsonSerializer(serializers.JSONField):
     def to_internal_value(self, data):
         try:
             res = json.dumps(data)
-            print('to_internal: ', res)
+            # print('to_internal: ', res)
         except (TypeError, ValueError):
             self.fail('invalid_json')
         return res

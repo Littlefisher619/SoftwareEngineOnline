@@ -17,7 +17,6 @@ class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
     filter_backend = (SearchFilter,)
 
     def get_serializer_class(self):
-        print(self.action)
         if self.action in ['update', 'partial_update']:
             return JudgementUpdateSerializer
         else:
