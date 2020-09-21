@@ -32,3 +32,16 @@ class GroupInfoSerializer(serializers.ModelSerializer):
         model = Group
         fields = ('id', 'leader', 'grouptype', 'members', 'groupname', 'member_detail')
         read_only_fields = ('id', 'leader', 'member_detail', 'members')
+
+
+class GroupTokenSerializer(GroupInfoSerializer):
+    class Meta:
+        model = Group
+        fields = ('id', 'leader', 'grouptype', 'members', 'groupname', 'member_detail', 'token')
+        read_only_fields = fields
+
+
+class GroupVerifyTokenSerializer(GroupInfoSerializer):
+    class Meta:
+        model = Group
+        fields = ('token', )

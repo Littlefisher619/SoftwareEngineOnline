@@ -5,13 +5,15 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from backend.serializers.groupserializers import GroupInfoSerializer
+from backend.serializers.groupserializers import GroupInfoSerializer, GroupTokenSerializer
 from backend.serializers.userserializers import *
 
 
 class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
     serializer_classes_by_action = {
         'updatepassword':  UserUpdatePasswordSerializer,
+        'mygroup': GroupTokenSerializer,
+        'groupinfo': GroupInfoSerializer,
     }
     permission_classes = [IsAuthenticated, ]
     queryset = User.objects.all()
@@ -65,8 +67,8 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
 
         data = {}
 
-        data['double'] = None if double_group is None else GroupInfoSerializer(double_group).data
-        data['big'] = None if big_group is None else GroupInfoSerializer(big_group).data
+        data['double'] = None if double_group is None else self.get_serializer(double_group).data
+        data['big'] = None if big_group is None else self.get_serializer(big_group).data
         return data
 
     @action(methods=['GET'], detail=True, name='组队查询')

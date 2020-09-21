@@ -6,9 +6,10 @@ from rest_framework.response import Response
 from backend.filters import GroupFilter
 from backend.serializers.groupserializers import *
 from backend.models import Group
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from backend.models import User
 import json
+import uuid
 
 
 class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
@@ -17,6 +18,18 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
     permission_classes = [IsAuthenticated, ]
     filter_class = GroupFilter
     filter_backend = (SearchFilter,)
+    permission_classes_by_action = {
+        'verifytoken': [AllowAny, ],
+    }
+
+    def get_serializer_class(self):
+        if self.action in ['verifytoken', ]:
+            return GroupVerifyTokenSerializer
+        else:
+            return GroupInfoSerializer
+
+    def get_permissions(self):
+        return [permission() for permission in self.permission_classes_by_action.get(self.action, [IsAuthenticated])]
 
     @action(methods=['POST'], url_path='create', detail=False)
     def _create(self, request):
@@ -46,6 +59,7 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
         )
 
     def perform_create(self, serializer):
+        serializer.validated_data['token'] = uuid.uuid4()
         serializer.validated_data['leader'] = self.request.user
         serializer.validated_data['members'] = json.dumps([self.request.user.pk,])
         if serializer.validated_data['grouptype'] == Group.GROUP and self.request.user.role == User.GROUP_MEMBER:
@@ -53,6 +67,15 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
             self.request.user.save()
 
         serializer.save()
+
+    @action(methods=['POST'], detail=True, name='验证Token')
+    def verifytoken(self, request, pk=None):
+        group = self.get_object()
+        return Response(
+            {
+                'success': request.data.get('token', None) == group.token,
+            }, status=status.HTTP_200_OK
+        )
 
     @action(methods=['GET'], detail=True, name='加入')
     def join(self, request, pk=None):

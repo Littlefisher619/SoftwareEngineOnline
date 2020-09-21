@@ -81,6 +81,7 @@ class Group(models.Model):
     groupname = models.CharField(u'队伍名', max_length=255, blank=True)
     members = models.TextField(u'组员列表', blank=True)
     createat = models.DateTimeField(u'创建时间', auto_now_add=True)
+    token = models.CharField(u'Token', max_length=255, blank=True)
 
     def __str__(self):
         return "Group(%d, %s) - %s" % (self.id, self.leader.username, self.groupname)
