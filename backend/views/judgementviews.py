@@ -9,12 +9,20 @@ from backend.models import Judgement, User
 from backend.serializers.judgementserializers import *
 
 
-class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
     serializer_class = JudgementInfoSerializer
     queryset = Judgement.objects.all()
     permission_classes = [IsAuthenticated, ]
     filter_class = JudgementFilter
     filter_backend = (SearchFilter,)
+
+    def update(self, request, *args, **kwargs):
+        if self.request.user != self.get_object().judger:
+            return Response({
+                    'success': False,
+                    'message': '只能修改自己创建的评分'
+                }, status=status.HTTP_200_OK)
+        return super().update(request, *args, **kwargs)
 
     @action(methods=['POST'], url_path='create', detail=False)
     def _create(self, request):
