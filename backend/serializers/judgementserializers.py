@@ -7,6 +7,14 @@ from .homworkserializer import HomeWorkSerializer
 from .jsonserializer import JsonSerializer
 
 
+class JudgementUpdateSerializer(serializers.ModelSerializer):
+    scoredatail = JsonSerializer(label='评分详情')
+
+    class Meta:
+        model = Judgement
+        fields = ('scoredatail', )
+
+
 class JudgementInfoSerializer(serializers.ModelSerializer):
     scoredatail = JsonSerializer(label='评分详情')
     judger = UserInfoSerializer(label='评分员', read_only=True)
