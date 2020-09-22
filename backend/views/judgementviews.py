@@ -10,7 +10,7 @@ from backend.serializers.judgementserializers import *
 
 
 class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
-    serializer_class = JudgementInfoSerializer
+    serializer_class = JudgementCreateSerializer
     queryset = Judgement.objects.all()
     permission_classes = [IsAuthenticated, ]
     filter_class = JudgementFilter
@@ -20,7 +20,7 @@ class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
         if self.action in ['update', 'partial_update']:
             return JudgementUpdateSerializer
         else:
-            return JudgementInfoSerializer
+            return JudgementCreateSerializer
 
     def update(self, request, *args, **kwargs):
         if self.request.user != self.get_object().judger:

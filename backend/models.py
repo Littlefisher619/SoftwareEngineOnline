@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+import json
+
 
 # Create your models here.
 
@@ -86,6 +88,30 @@ class Group(models.Model):
     def __str__(self):
         return "Group(%d, %s) - %s" % (self.id, self.leader.username, self.groupname)
 
+    @classmethod
+    def filter_group_by_from_user(cls, user):
+        double_group = None
+        big_group = None
+
+        try:
+            double_group = Group.objects.get(leader=user, grouptype=Group.DOUBLE)
+        except Group.DoesNotExist:
+            for group in Group.objects.filter(grouptype=Group.DOUBLE):
+
+                if user.pk in json.loads(group.members):
+                    double_group = group
+                    break
+
+        try:
+            big_group = Group.objects.get(leader=user, grouptype=Group.GROUP)
+        except Group.DoesNotExist:
+            for group in Group.objects.filter(grouptype=Group.GROUP):
+                if user.pk in json.loads(group.members):
+                    big_group = group
+                    break
+
+        return double_group, big_group
+
 
 class Judgement(models.Model):
     class Meta:
@@ -94,9 +120,12 @@ class Judgement(models.Model):
         ordering = ['-createat']
 
     id = models.BigAutoField(primary_key=True, editable=False)
-    homework = models.ForeignKey(HomeWork, related_name='judgement_homework', verbose_name='对应作业', on_delete=models.CASCADE, null=True)
-    group = models.ForeignKey(Group, related_name='judgement_group', verbose_name='对应组', on_delete=models.CASCADE, blank=True, null=True)
-    student = models.ForeignKey(User, related_name='judgement_user', verbose_name='对应学生', on_delete=models.CASCADE, blank=True, null=True)
+    homework = models.ForeignKey(HomeWork, related_name='judgement_homework', verbose_name='对应作业',
+                                 on_delete=models.CASCADE, null=True)
+    group = models.ForeignKey(Group, related_name='judgement_group', verbose_name='对应组', on_delete=models.CASCADE,
+                              blank=True, null=True)
+    student = models.ForeignKey(User, related_name='judgement_user', verbose_name='对应学生', on_delete=models.CASCADE,
+                                blank=True, null=True)
     scoredatail = models.TextField(u'评分详情', blank=True)
     judger = models.ForeignKey(User, related_name='judger_user', verbose_name='评分人', on_delete=models.CASCADE)
     createat = models.DateTimeField(u'创建时间', auto_now=True)

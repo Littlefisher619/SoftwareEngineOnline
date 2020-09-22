@@ -5,8 +5,9 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from backend.serializers.groupserializers import GroupInfoSerializer, GroupTokenSerializer
+from backend.serializers.groupserializers import *
 from backend.serializers.userserializers import *
+from backend.serializers.judgementserializers import *
 
 
 class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
@@ -14,6 +15,7 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
         'updatepassword':  UserUpdatePasswordSerializer,
         'mygroup': GroupTokenSerializer,
         'groupinfo': GroupInfoSerializer,
+        'judgements': JudgementInfoSerializer,
     }
     permission_classes = [IsAuthenticated, ]
     queryset = User.objects.all()
@@ -44,32 +46,28 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-    def __get_group_info_json_data(self, user):
-        double_group = None
-        big_group = None
+    def __serialize_group_info_data(self, user):
+        assert self.action in ['groupinfo', 'mygroup']
+        double_group, big_group = Group.filter_group_by_from_user(user)
+        data = {
+            'double': None,
+            'big': None
+        }
 
-        try:
-            double_group = Group.objects.get(leader=user, grouptype=Group.DOUBLE)
-        except Group.DoesNotExist:
-            for group in Group.objects.filter(grouptype=Group.DOUBLE):
-
-                if self.request.user.pk in json.loads(group.members):
-                    double_group = group
-                    break
-
-        try:
-            big_group = Group.objects.get(leader=user, grouptype=Group.GROUP)
-        except Group.DoesNotExist:
-            for group in Group.objects.filter(grouptype=Group.GROUP):
-                if self.request.user.pk in json.loads(group.members):
-                    big_group = group
-                    break
-
-        data = {}
-
-        data['double'] = None if double_group is None else self.get_serializer(double_group).data
-        data['big'] = None if big_group is None else self.get_serializer(big_group).data
+        if double_group:
+            data['double'] = self.get_serializer(double_group).data
+        if big_group:
+            data['big'] = self.get_serializer(big_group).data
         return data
+
+    @action(methods=['GET'], detail=False, name='评分查询')
+    def judgements(self, request):
+        double_group, big_group = Group.filter_group_by_from_user(self.request.user)
+        data = dict()
+        data['big'] = self.get_serializer(Judgement.objects.filter(group=big_group), many=True).data
+        data['double'] = self.get_serializer(Judgement.objects.filter(group=double_group), many=True).data
+        data['single'] = self.get_serializer(Judgement.objects.filter(student=self.request.user), many=True).data
+        return Response(data, status=status.HTTP_200_OK)
 
     @action(methods=['GET'], detail=True, name='组队查询')
     def groupinfo(self, request, pk):
@@ -79,14 +77,14 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
                     'message': '你走错地方惹，这儿啥也没有~'
                 }, status=status.HTTP_403_FORBIDDEN)
         return Response(
-            self.__get_group_info_json_data(self.get_object()),
+            self.__serialize_group_info_data(self.get_object()),
             status=status.HTTP_200_OK
         )
 
     @action(methods=['GET'], detail=False, name='我的组队')
     def mygroup(self, request):
         return Response(
-            self.__get_group_info_json_data(self.request.user),
+            self.__serialize_group_info_data(self.request.user),
             status=status.HTTP_200_OK
         )
 

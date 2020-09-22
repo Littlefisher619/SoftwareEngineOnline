@@ -16,7 +16,7 @@ class JudgementUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'createat',)
 
 
-class JudgementInfoSerializer(serializers.ModelSerializer):
+class JudgementCreateSerializer(serializers.ModelSerializer):
     scoredatail = JsonSerializer(label='评分详情')
     judger = UserInfoSerializer(label='评分员', read_only=True)
     # homework = HomeWorkSerializer(label='作业')
@@ -47,3 +47,14 @@ class JudgementInfoSerializer(serializers.ModelSerializer):
         model = Judgement
         fields = ('id', 'student', 'group', 'judger', 'homework', 'scoredatail', 'createat', )
         read_only_fields = ('id', 'createat', 'judger', )
+
+
+class JudgementInfoSerializer(serializers.ModelSerializer):
+    scoredatail = JsonSerializer(label='评分详情')
+    judger = UserInfoSerializer(label='评分员', read_only=True)
+    homework = HomeWorkSerializer(label='作业')
+
+    class Meta:
+        model = Judgement
+        fields = ('id', 'student', 'group', 'judger', 'homework', 'scoredatail', 'createat', )
+        read_only_fields = fields
