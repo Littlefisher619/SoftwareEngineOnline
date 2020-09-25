@@ -58,6 +58,7 @@ class HomeWork(models.Model):
     author = models.ForeignKey(User, related_name='homework_author_user', verbose_name='发布者', on_delete=models.CASCADE)
     createat = models.DateTimeField(u'创建时间', auto_now_add=True)
     homeworktype = models.PositiveSmallIntegerField(verbose_name="作业类型", choices=TYPE_CHOICES, default=SIGNGLE)
+    blogurl = models.URLField(u'博客园链接', blank=True, default='#')
 
     def __str__(self):
         return "HomeWork(%d) - %s" % (self.id, self.title)
