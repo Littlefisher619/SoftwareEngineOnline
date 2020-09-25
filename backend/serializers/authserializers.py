@@ -9,7 +9,7 @@ from rest_framework_jwt.settings import api_settings
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'stuid', )
+        fields = ('id', 'stuid', 'stuname', 'username', )
 
 
 class LoginSerializer(serializers.ModelSerializer):

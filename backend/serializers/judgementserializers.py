@@ -3,6 +3,7 @@ from rest_framework.fields import ChoiceField
 
 from backend.models import Judgement, Group, HomeWork
 from .authserializers import UserInfoSerializer
+from .groupserializers import GroupInfoSerializer
 from .homworkserializer import HomeWorkSerializer
 from .jsonserializer import JsonSerializer
 
@@ -51,10 +52,12 @@ class JudgementCreateSerializer(serializers.ModelSerializer):
 
 class JudgementInfoSerializer(serializers.ModelSerializer):
     scoredatail = JsonSerializer(label='评分详情')
-    judger = UserInfoSerializer(label='评分员', read_only=True)
+    # judger = UserInfoSerializer(label='评分员', read_only=True)
+    student = UserInfoSerializer(label='学生', read_only=True)
+    group = GroupInfoSerializer(label='组', read_only=True)
     homework = HomeWorkSerializer(label='作业')
 
     class Meta:
         model = Judgement
-        fields = ('id', 'student', 'group', 'judger', 'homework', 'scoredatail', 'createat', )
+        fields = ('id', 'student', 'group', 'homework', 'scoredatail', 'createat', )
         read_only_fields = fields
