@@ -20,6 +20,6 @@ router.register(r'group', GroupViewSet, basename='队伍')
 router.register(r'judgement', JudgementViewSet, basename='评分')
 
 urlpatterns = [
-    path('', include(router.urls))
+    path(r'api/', include(router.urls))
 
 ]
