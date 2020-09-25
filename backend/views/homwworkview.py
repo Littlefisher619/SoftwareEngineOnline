@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -37,7 +38,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
         if homework.homeworktype == homework.SIGNGLE:
             serializer_class = UserInfoSerializer
             judgements = Judgement.objects.filter(homework=homework).values_list('student')
-            users = User.objects.all()
+            users = User.objects.filter(~Q(role=User.TEST_GROUP))
             for user in users:
                 if not judgements.filter(student=user).exists():
                     tasklist.append(user)
