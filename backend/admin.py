@@ -29,8 +29,9 @@ class GroupAdmin(admin.ModelAdmin):
 
 class JudgementAdmin(admin.ModelAdmin):
     list_per_page = 10
-    list_display = ['id', 'student', 'group', 'judger', ]
-    list_filter = ['judger', ]
+    list_display = ['id', 'student', 'group', 'judger', 'totalscore']
+    list_filter = ['homework', ]
+    search_fields = ['student__stuname', 'group__groupname', 'student__stuid',]
 
 
 admin.site.register(User, UserAdmin)
