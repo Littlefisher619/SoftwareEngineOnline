@@ -127,7 +127,7 @@ class Judgement(models.Model):
                               blank=True, null=True)
     student = models.ForeignKey(User, related_name='judgement_user', verbose_name='对应学生', on_delete=models.CASCADE,
                                 blank=True, null=True)
-    scoredatail = models.TextField(u'评分详情', blank=True)
+    scoredetail = models.TextField(u'评分详情', blank=True)
     judger = models.ForeignKey(User, related_name='judger_user', verbose_name='评分人', on_delete=models.CASCADE)
     createat = models.DateTimeField(u'创建时间', auto_now=True)
 

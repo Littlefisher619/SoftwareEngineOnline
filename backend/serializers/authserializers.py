@@ -9,7 +9,7 @@ from rest_framework_jwt.settings import api_settings
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'stuid', 'stuname', 'username', )
+        fields = ('id', 'stuid', 'stuname', 'username', 'role', )
 
 
 class LoginSerializer(serializers.ModelSerializer):
@@ -77,7 +77,7 @@ class SignupSerializer(serializers.ModelSerializer):
         # read_only_fields = ('token', )
 
     password = CharField(min_length=6, max_length=100, label='密码', required=True)
-    username = CharField(min_length=6, max_length=100, label='用户名', required=True)
+    username = CharField(min_length=3, max_length=100, label='用户名', required=True)
     stuid = CharField(max_length=10, label='学号', required=True)
     stuname = CharField(max_length=200, label='姓名', required=True)
     email = EmailField(label='邮箱', required=True)

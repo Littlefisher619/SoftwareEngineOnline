@@ -9,16 +9,16 @@ from .jsonserializer import JsonSerializer
 
 
 class JudgementUpdateSerializer(serializers.ModelSerializer):
-    scoredatail = JsonSerializer(label='评分详情')
+    scoredetail = JsonSerializer(label='评分详情')
 
     class Meta:
         model = Judgement
-        fields = ('id', 'scoredatail', 'createat',)
+        fields = ('id', 'scoredetail', 'createat',)
         read_only_fields = ('id', 'createat',)
 
 
 class JudgementCreateSerializer(serializers.ModelSerializer):
-    scoredatail = JsonSerializer(label='评分详情')
+    scoredetail = JsonSerializer(label='评分详情')
     judger = UserInfoSerializer(label='评分员', read_only=True)
     # homework = HomeWorkSerializer(label='作业')
 
@@ -46,18 +46,18 @@ class JudgementCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Judgement
-        fields = ('id', 'student', 'group', 'judger', 'homework', 'scoredatail', 'createat', )
+        fields = ('id', 'student', 'group', 'judger', 'homework', 'scoredetail', 'createat', )
         read_only_fields = ('id', 'createat', 'judger', )
 
 
 class JudgementInfoSerializer(serializers.ModelSerializer):
-    scoredatail = JsonSerializer(label='评分详情')
+    scoredetail = JsonSerializer(label='评分详情')
     # judger = UserInfoSerializer(label='评分员', read_only=True)
-    student = UserInfoSerializer(label='学生', read_only=True)
-    group = GroupInfoSerializer(label='组', read_only=True)
-    homework = HomeWorkSerializer(label='作业')
+    # student = UserInfoSerializer(label='学生', read_only=True)
+    # group = GroupInfoSerializer(label='组', read_only=True)
+    # homework = HomeWorkSerializer(label='作业')
 
     class Meta:
         model = Judgement
-        fields = ('id', 'student', 'group', 'homework', 'scoredatail', 'createat', )
+        fields = ('id', 'student', 'group', 'homework', 'scoredetail', 'createat', )
         read_only_fields = fields
