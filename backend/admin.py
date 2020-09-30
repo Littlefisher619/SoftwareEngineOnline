@@ -29,9 +29,29 @@ class GroupAdmin(admin.ModelAdmin):
 
 class JudgementAdmin(admin.ModelAdmin):
     list_per_page = 10
-    list_display = ['id', 'student', 'group', 'judger', 'totalscore']
-    list_filter = ['homework', ]
+    list_display = ['id', 'get_stuname', 'get_stuid', 'get_groupname', 'judger', 'totalscore']
+    list_filter = ['homework',]
     search_fields = ['student__stuname', 'group__groupname', 'student__stuid',]
+
+    def get_stuname(self, judgement):
+        return judgement.student.stuname if judgement.student else None
+
+    get_stuname.short_description = '学生姓名'
+    get_stuname.admin_order_field = 'student__stuname'
+
+    def get_stuid(self, judgement):
+        return judgement.student.stuid if judgement.student else None
+
+    get_stuid.short_description = '学生学号'
+    get_stuid.admin_order_field = 'student__stuid'
+
+    def get_groupname(self, judgement):
+        return judgement.group.groupname if judgement.group else None
+
+    get_groupname.short_description = '组名'
+    get_groupname.admin_order_field = 'group__groupname'
+
+
 
 
 admin.site.register(User, UserAdmin)
