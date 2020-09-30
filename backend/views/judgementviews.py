@@ -15,6 +15,7 @@ class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
     permission_classes = [IsAuthenticated, ]
     filter_class = JudgementFilter
     filter_backend = (SearchFilter,)
+    search_fields = ["^student__stuname", "^student__stuid", "^group__groupname"]
 
     def get_serializer_class(self):
         if self.action in ['update', 'partial_update']:
@@ -42,6 +43,8 @@ class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+
         self.perform_create(serializer)
         return Response(
             {

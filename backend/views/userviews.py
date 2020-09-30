@@ -64,8 +64,8 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
     def judgements(self, request):
         double_group, big_group = Group.filter_group_by_from_user(self.request.user)
         data = dict()
-        data['big'] = self.get_serializer(Judgement.objects.filter(group=big_group), many=True).data
-        data['double'] = self.get_serializer(Judgement.objects.filter(group=double_group), many=True).data
+        data['big'] = self.get_serializer(Judgement.objects.filter(group=big_group), many=True).data if big_group else []
+        data['double'] = self.get_serializer(Judgement.objects.filter(group=double_group), many=True).data if double_group else []
         data['single'] = self.get_serializer(Judgement.objects.filter(student=self.request.user), many=True).data
         return Response(data, status=status.HTTP_200_OK)
 
