@@ -33,7 +33,7 @@ class User(AbstractUser):
     createat = models.DateTimeField(u'注册时间', auto_now_add='注册时间')
 
     def __str__(self):
-        return self.username
+        return f'{self.stuname}({self.id}) {self.stuid}'
 
 
 class HomeWork(models.Model):
@@ -61,7 +61,7 @@ class HomeWork(models.Model):
     blogurl = models.URLField(u'博客园链接', blank=True, default='#')
 
     def __str__(self):
-        return "HomeWork(%d) - %s" % (self.id, self.title)
+        return f"作业({self.id}) - {self.title}"
 
 
 class Group(models.Model):
@@ -87,7 +87,7 @@ class Group(models.Model):
     token = models.CharField(u'Token', max_length=255, blank=True)
 
     def __str__(self):
-        return "Group(%d, %s) - %s" % (self.id, self.leader.username, self.groupname)
+        return f"组({self.id},{self.leader.stuname}) - {self.groupname}"
 
     @classmethod
     def filter_group_by_from_user(cls, user):
@@ -133,7 +133,7 @@ class Judgement(models.Model):
     createat = models.DateTimeField(u'创建时间', auto_now=True)
 
     def __str__(self):
-        return "Group(%d, %s) - %s" % (self.id, self.judger.username, self.homework)
+        return f"评分({self.id},{self.judger.stuname}) - {self.homework.title}"
 
 
 class Rate(models.Model):
