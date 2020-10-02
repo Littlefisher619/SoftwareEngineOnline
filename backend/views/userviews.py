@@ -1,14 +1,18 @@
 import json
 
+from django.core.mail import send_mail, EmailMessage
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
+from SoftwareEngineOnline import settings
 from backend.serializers.groupserializers import *
 from backend.serializers.userserializers import *
 from backend.serializers.judgementserializers import *
 
+import hashlib
+from os import urandom
 
 class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
     serializer_classes_by_action = {
@@ -17,6 +21,7 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
         'groupinfo': GroupInfoSerializer,
         'judgements': JudgementInfoSerializer,
     }
+    # lookup_field = 'stuid'
     permission_classes = [IsAuthenticated, ]
     queryset = User.objects.all()
 
@@ -98,4 +103,30 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
         return Response({
             'success': True,
             'message': '密码已修改'
+        }, status=status.HTTP_200_OK)
+
+
+
+    @action(methods=['GET'], detail=True, name='重置密码')
+    def resetpassword(self, request, pk=None):
+        if self.request.user.role != User.TEST_GROUP:
+            return Response({
+                    'success': False,
+                    'message': '你没有权限给别人重置密码QwQ'
+                }, status=status.HTTP_403_FORBIDDEN)
+
+        new_pwd = hashlib.md5(urandom(64)).hexdigest()
+        user = self.get_object()
+
+        subject = '福大软工在线-密码找回'
+        message = f'您好，{user.stuname}！\n您在福大软工在线平台的密码已重置，新密码是：{new_pwd}\n新密码是随机生成的如果觉得新密码不满意可以随后登录系统进行修改密码~'
+        email = EmailMessage(subject, message, to=[user.email])
+        email.send()
+
+        user.set_password(new_pwd)
+        # user.save()
+
+        return Response({
+            'success': True,
+            'message': '密码重置成功！'
         }, status=status.HTTP_200_OK)

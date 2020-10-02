@@ -164,3 +164,13 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Email
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mxhichina.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'seonline@localhost'
+EMAIL_HOST_PASSWORD = 'root'
+DEFAULT_FROM_EMAIL = '软工在线<seonline@localhost>'
