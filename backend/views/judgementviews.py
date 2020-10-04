@@ -16,6 +16,8 @@ class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
     filter_class = JudgementFilter
     filter_backend = (SearchFilter,)
     search_fields = ["^student__stuname", "^student__stuid", "^group__groupname"]
+    ordering_fields = ['student__stuname', 'student__stuid', 'group__groupname', 'group__leader__stuname', 'totalscore', 'student', 'group', 'id']
+    ordering = ['-id']
 
     def get_serializer_class(self):
         if self.action in ['update', 'partial_update']:
