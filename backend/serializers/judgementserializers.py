@@ -21,7 +21,12 @@ class JudgementUpdateSerializer(serializers.ModelSerializer):
             for point in points:
                 totalscore += point['score']
             totalscore *= (1 + bonus)
+            if totalscore < 0:
+                totalscore = 0
+            totalscore = round(totalscore, 2)
             attrs['totalscore'] = totalscore
+
+
         except KeyError:
              raise serializers.ValidationError("提交的评分信息不正确")
         except TypeError:
@@ -61,6 +66,7 @@ class JudgementCreateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("对当前队伍的这一项结对/团队作业评分已经存在")
 
         scoredetail = JsonSerializer().to_representation(attrs.get('scoredetail'))
+
         try:
             bonus = scoredetail['bonus']
             points = scoredetail['scorepoints']
@@ -68,6 +74,10 @@ class JudgementCreateSerializer(serializers.ModelSerializer):
             for point in points:
                 totalscore += point['score']
             totalscore *= (1 + bonus)
+            if totalscore < 0:
+                totalscore = 0
+
+            totalscore = round(totalscore, 2)
             attrs['totalscore'] = totalscore
         except KeyError:
              raise serializers.ValidationError("提交的评分信息不正确")
