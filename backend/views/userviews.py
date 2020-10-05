@@ -109,7 +109,7 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
 
     @action(methods=['GET'], detail=True, name='重置密码')
     def resetpassword(self, request, pk=None):
-        if self.request.user.role != User.TEST_GROUP:
+        if not self.request.user.is_staff:
             return Response({
                     'success': False,
                     'message': '你没有权限给别人重置密码QwQ'
@@ -122,7 +122,10 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
         message = f'您好，{user.stuname}！\n您在福大软工在线平台的密码已重置，新密码是：{new_pwd}\n新密码是随机生成的如果觉得新密码不满意可以随后登录系统进行修改密码~'
         email = EmailMessage(subject, message, to=[user.email])
         email.send()
-
+        '''
+            TO-DO:
+            Using Cryptographic-signing in Django to implements reset password by a link.
+        '''
         user.set_password(new_pwd)
         # user.save()
 
