@@ -74,9 +74,10 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
         judgements = Judgement.objects.filter(homework=homework)
 
         totalscore = {
-            'min': 0,
-            'max': 0,
+            'min': None,
+            'max': None,
             'avg': 0,
+            'exclude': 0,
             'ranges': [
                 {
                     'from': 100,
@@ -107,24 +108,23 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
         points = {}
 
         for judgement in judgements:
-            if 'min' not in totalscore:
-                totalscore['min'] = totalscore['max'] = totalscore['avg'] = judgement.totalscore
-                continue
-
-            if totalscore['min'] > judgement.totalscore:
-                totalscore['min'] = judgement.totalscore
-
-            if totalscore['max'] < judgement.totalscore:
-                totalscore['max'] = judgement.totalscore
-
-            totalscore['avg'] += judgement.totalscore
-
             for _range in totalscore['ranges']:
                 in_range_from = _range['from'] is None or judgement.totalscore >= _range['from']
                 in_range_to = _range['to'] is None or judgement.totalscore <= _range['to']
                 if in_range_from and in_range_to:
                     _range['count'] += 1
 
+            if judgement.totalscore == 0:
+                totalscore['exclude'] += 1
+                continue
+
+            if totalscore['min'] is None or totalscore['min'] > judgement.totalscore:
+                totalscore['min'] = judgement.totalscore
+
+            if totalscore['max'] is None or totalscore['max'] < judgement.totalscore:
+                totalscore['max'] = judgement.totalscore
+
+            totalscore['avg'] += judgement.totalscore
 
             scorepoints = json.loads(judgement.scoredetail)['scorepoints']
 
@@ -134,25 +134,29 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
                 if detail['point'] not in points:
                     points[detail['point']] = {
                         'point': detail['point'],
-                        'max': score,
-                        'min': score,
-                        'avg': score,
+                        'max': None,
+                        'min': None,
+                        'avg': 0,
+                        'exclude': 0,
                     }
-                    continue
 
                 p = points[detail['point']]
 
-                if p['min'] > score:
+                if score == 0:
+                    p['exclude'] += 1
+                    continue
+
+                if p['min'] is None or p['min'] > score:
                     p['min'] = score
 
-                if p['max'] < score:
+                if p['max'] is None or p['max'] < score:
                     p['max'] = score
 
                 p['avg'] += score
 
-        totalscore['avg'] = round(totalscore['avg'] / len(judgements)*1.00, 2)
+        totalscore['avg'] = round(totalscore['avg'] / (len(judgements)-totalscore['exclude'])*1.00, 2)
         for pointname, point in points.items():
-            point['avg'] = round(point['avg'] / len(judgements)*1.00, 2)
+            point['avg'] = round(point['avg'] / (len(judgements) - point['exclude'])*1.00, 2)
 
         return Response({
             'totalscore': totalscore,
