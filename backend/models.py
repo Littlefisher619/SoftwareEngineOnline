@@ -42,12 +42,12 @@ class HomeWork(models.Model):
         verbose_name_plural = verbose_name
         ordering = ['-createat']
 
-    SIGNGLE = 0
+    SINGLE = 0
     DOUBLE = 1
     GROUP = 2
 
     TYPE_CHOICES = (
-        (SIGNGLE, '单人作业'),
+        (SINGLE, '单人作业'),
         (DOUBLE, '结对作业'),
         (GROUP, '组队作业'),
     )
@@ -57,7 +57,7 @@ class HomeWork(models.Model):
     scorerules = models.TextField(u'得分规则', blank=True)
     author = models.ForeignKey(User, related_name='homework_author_user', verbose_name='发布者', on_delete=models.CASCADE)
     createat = models.DateTimeField(u'创建时间', auto_now_add=True)
-    homeworktype = models.PositiveSmallIntegerField(verbose_name="作业类型", choices=TYPE_CHOICES, default=SIGNGLE)
+    homeworktype = models.PositiveSmallIntegerField(verbose_name="作业类型", choices=TYPE_CHOICES, default=SINGLE)
     blogurl = models.URLField(u'博客园链接', blank=True, default='#')
 
     def __str__(self):
@@ -136,6 +136,7 @@ class Judgement(models.Model):
     totalscore = models.FloatField(u'总分',default=0)
     judger = models.ForeignKey(User, related_name='judger_user', verbose_name='评分人', on_delete=models.CASCADE)
     createat = models.DateTimeField(u'创建时间', auto_now=True)
+    blogurl = models.URLField(u'博客园链接', blank=True, default='#')
 
     def __str__(self):
         return f"评分({self.id},{self.judger.stuname}) - {self.homework.title}"

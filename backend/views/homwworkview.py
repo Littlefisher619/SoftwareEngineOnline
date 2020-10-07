@@ -38,7 +38,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
         homework = self.get_object()
         taskqueryset = None
         serializer_class = None
-        if homework.homeworktype == homework.SIGNGLE:
+        if homework.homeworktype == homework.SINGLE:
             serializer_class = UserInfoSerializer
             filter_class = UserFilter
             judged_user = Judgement.objects.filter(homework=homework).values_list('student', flat=True)

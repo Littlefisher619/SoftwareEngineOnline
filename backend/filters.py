@@ -27,7 +27,7 @@ class TasklistSearchFilter(SearchFilter):
         if 'pk' in view.kwargs:
             pk = view.kwargs['pk']
             homework = HomeWork.objects.get(id=pk)
-            if homework.homeworktype == HomeWork.SIGNGLE:
+            if homework.homeworktype == HomeWork.SINGLE:
                 return ["^stuname", "^stuid"]
             elif homework.homeworktype in [HomeWork.DOUBLE, HomeWork.GROUP]:
                 return ["^leader__stuname", "^groupname", "^leader__stuid"]

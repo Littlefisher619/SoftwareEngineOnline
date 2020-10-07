@@ -49,7 +49,7 @@ class JudgementCreateSerializer(serializers.ModelSerializer):
         if attrs.get('homework') is None:
             raise serializers.ValidationError("需指定一个作业才能进行评分")
 
-        if attrs.get('homework').homeworktype == HomeWork.SIGNGLE:
+        if attrs.get('homework').homeworktype == HomeWork.SINGLE:
             if not attrs.get('student'):
                 raise serializers.ValidationError("作业为单人作业时，必须指定student关键字以创建评分对象")
             if attrs.get('group'):
@@ -108,5 +108,5 @@ class JudgementInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Judgement
-        fields = ('id', 'student', 'group', 'homework', 'scoredetail', 'createat', 'totalscore')
+        fields = ('id', 'student', 'group', 'homework', 'scoredetail', 'createat', 'totalscore', 'blogurl')
         read_only_fields = fields
