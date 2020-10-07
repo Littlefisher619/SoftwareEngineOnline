@@ -14,11 +14,10 @@ class GroupInfoSerializer(serializers.ModelSerializer):
     groupname = CharField(min_length=5, label='队伍名称')
 
     def get_member_detail(self, group):
-        member_list = []
-        for i in JsonSerializer().to_representation(group.members):
-            if group.leader.pk != i:
-                member_list.append(UserInfoSerializer(User.objects.get(pk=i)).data)
-        return member_list
+        print(group.get_members())
+        print(UserInfoSerializer(group.get_members(), many=True).data)
+        return UserInfoSerializer(group.get_members(), many=True).data
+
 
     # def validate(self, data):
     #     super().validate(data)

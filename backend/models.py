@@ -89,6 +89,11 @@ class Group(models.Model):
     def __str__(self):
         return f"组({self.id},{self.leader.stuname}) - {self.groupname}"
 
+    def get_members(self):
+        member_list = json.loads(self.members)
+        assert isinstance(member_list, list)
+        return User.objects.filter(id__in=json.loads(self.members))
+
     @classmethod
     def filter_group_by_from_user(cls, user):
         double_group = None

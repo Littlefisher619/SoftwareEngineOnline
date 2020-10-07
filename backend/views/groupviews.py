@@ -42,8 +42,8 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
                 'message': '你已经是当前队伍类型的组长了，不能再创建新的队伍'
             }, status=status.HTTP_200_OK)
 
-        for data in Group.objects.filter(grouptype=serializer.validated_data['grouptype']).values('members'):
-            if self.request.user.pk in json.loads(data['members']):
+        for data in Group.objects.filter(grouptype=serializer.validated_data['grouptype']).values('members', flat=True):
+            if self.request.user.pk in json.loads(data):
                 return Response({
                     'success': False,
                     'message': '你已经是当前队伍类型的某个组的组员，不能再创建新的队伍'
@@ -61,7 +61,7 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
     def perform_create(self, serializer):
         serializer.validated_data['token'] = uuid.uuid4()
         serializer.validated_data['leader'] = self.request.user
-        serializer.validated_data['members'] = json.dumps([self.request.user.pk,])
+        serializer.validated_data['members'] = '[]'
         if serializer.validated_data['grouptype'] == Group.GROUP and self.request.user.role == User.GROUP_MEMBER:
             self.request.user.role = User.GROUP_LEADER
             self.request.user.save()
@@ -87,8 +87,8 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
                 'message': '你已经是当前队伍类型的组长了，不能再加入其它队伍'
             }, status=status.HTTP_200_OK)
 
-        for data in Group.objects.filter(grouptype=grouptype).values('members'):
-            if self.request.user.pk in json.loads(data['members']):
+        for member_list in Group.objects.filter(grouptype=grouptype).values('members', flat=True):
+            if self.request.user.pk in json.loads(member_list):
                 return Response({
                     'success': False,
                     'message': '你已经是当前队伍类型的某个组的组员，不能再加入其它队伍'
@@ -97,7 +97,7 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
         members_limit = 2 if grouptype == Group.DOUBLE else 10
         members = json.loads(group.members)
         members_len = len(members)
-        if members_len >= members_limit:
+        if members_len >= members_limit - 1:
             return Response({
                 'success': False,
                 'message': '这个组已经满员惹~'

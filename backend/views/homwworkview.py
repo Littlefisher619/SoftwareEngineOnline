@@ -9,8 +9,10 @@ from backend.serializers.groupserializers import GroupInfoSerializer
 from backend.serializers.homworkserializer import HomeWorkSerializer
 from backend.models import HomeWork, User, Judgement, Group
 from backend.filters import GroupFilter, UserFilter
+import json
 
-class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin):
+class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin,
+                      mixins.RetrieveModelMixin):
     permission_classes_by_action = {
         'create': [IsAdminUser, ],
     }
@@ -28,32 +30,26 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
     def tasklist(self, request, pk=None):
         if self.request.user.role != User.TEST_GROUP:
             return Response({
-                    'success': False,
-                    'message': '你走错地方惹，这儿啥也没有~'
-                }, status=status.HTTP_403_FORBIDDEN)
+                'success': False,
+                'message': '你走错地方惹，这儿啥也没有~'
+            }, status=status.HTTP_403_FORBIDDEN)
 
         homework = self.get_object()
-        tasklist = []
+        taskqueryset = None
         serializer_class = None
         if homework.homeworktype == homework.SIGNGLE:
             serializer_class = UserInfoSerializer
-            judgements = Judgement.objects.filter(homework=homework).values_list('student')
-            users = User.objects.filter(~Q(role=User.TEST_GROUP))
-            user_filtered = UserFilter(request.GET, queryset=users).qs
-            for user in user_filtered:
-                if not judgements.filter(student=user).exists():
-                    tasklist.append(user)
+            filter_class = UserFilter
+            judged_user = Judgement.objects.filter(homework=homework).values_list('student', flat=True)
+            taskqueryset = User.objects.filter(~Q(id__in=judged_user),Q(role__in=[User.GROUP_MEMBER, User.GROUP_LEADER]))
 
         elif homework.homeworktype in [homework.GROUP, homework.DOUBLE]:
             serializer_class = GroupInfoSerializer
-            judgements = Judgement.objects.filter(homework=homework).values_list('group')
-            groups = Group.objects.filter(grouptype=homework.homeworktype)
-            grouo_filtered = GroupFilter(request.GET, queryset=groups).qs
-            for group in grouo_filtered:
-                if not judgements.filter(group=group).exists():
-                    tasklist.append(group)
+            filter_class = GroupFilter
+            judged_group = Judgement.objects.filter(homework=homework).values_list('student', flat=True)
+            taskqueryset = Group.objects.filter(~Q(id__in=judged_group), Q(grouptype=homework.homeworktype))
 
-        queryset = self.filter_queryset(tasklist)
+        queryset = filter_class(request.GET, queryset=taskqueryset).qs
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -63,4 +59,101 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
         serializer = serializer_class(queryset, many=True)
         return Response(serializer.data)
         pass
+
+    @action(methods=['GET'], url_path='statistics', detail=True)
+    def statics(self, request, pk=None):
+        if self.request.user.role != User.TEST_GROUP:
+            return Response({
+                'success': False,
+                'message': '只有测试组可以使用统计功能'
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        homework = self.get_object()
+        judgements = Judgement.objects.filter(homework=homework)
+
+        totalscore = {
+            'min': 0,
+            'max': 0,
+            'avg': 0,
+            'ranges': [
+                {
+                    'from': 100,
+                    'to': None,
+                    'count': 0,
+                }
+            ]
+        }
+
+        for i in range(0, 3):
+            totalscore['ranges'].append(
+                {
+                    'from': i*20,
+                    'to': i*20 + 19,
+                    'count': 0,
+                }
+            )
+
+        for i in range(60, 100, 5):
+            totalscore['ranges'].append(
+                {
+                    'from': i,
+                    'to': i + 4,
+                    'count': 0,
+                }
+            )
+
+        points = {}
+
+        for judgement in judgements:
+            if 'min' not in totalscore:
+                totalscore['min'] = totalscore['max'] = totalscore['avg'] = judgement.totalscore
+                continue
+
+            if totalscore['min'] > judgement.totalscore:
+                totalscore['min'] = judgement.totalscore
+
+            if totalscore['max'] < judgement.totalscore:
+                totalscore['max'] = judgement.totalscore
+
+            totalscore['avg'] += judgement.totalscore
+
+            for _range in totalscore['ranges']:
+                in_range_from = _range['from'] is None or judgement.totalscore >= _range['from']
+                in_range_to = _range['to'] is None or judgement.totalscore <= _range['to']
+                if in_range_from and in_range_to:
+                    _range['count'] += 1
+
+
+            scorepoints = json.loads(judgement.scoredetail)['scorepoints']
+
+            for detail in scorepoints:
+                score = detail['score']
+
+                if detail['point'] not in points:
+                    points[detail['point']] = {
+                        'point': detail['point'],
+                        'max': score,
+                        'min': score,
+                        'avg': score,
+                    }
+                    continue
+
+                p = points[detail['point']]
+
+                if p['min'] > score:
+                    p['min'] = score
+
+                if p['max'] < score:
+                    p['max'] = score
+
+                p['avg'] += score
+
+        totalscore['avg'] = round(totalscore['avg'] / len(judgements)*1.00, 2)
+        for pointname, point in points.items():
+            point['avg'] = round(point['avg'] / len(judgements)*1.00, 2)
+
+        return Response({
+            'totalscore': totalscore,
+            'points': points.values()
+        })
 
