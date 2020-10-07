@@ -8,7 +8,7 @@ from backend.serializers.authserializers import UserInfoSerializer
 from backend.serializers.groupserializers import GroupInfoSerializer
 from backend.serializers.homworkserializer import HomeWorkSerializer
 from backend.models import HomeWork, User, Judgement, Group
-from backend.filters import GroupFilter, UserFilter
+from backend.filters import GroupFilter, UserFilter, TasklistSearchFilter
 import json
 
 class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin,
@@ -18,6 +18,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
     }
     serializer_class = HomeWorkSerializer
     queryset = HomeWork.objects.all()
+    filter_backend = (TasklistSearchFilter,)
 
     def get_permissions(self):
         return [permission() for permission in self.permission_classes_by_action.get(self.action, [IsAuthenticated])]
@@ -50,6 +51,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
             taskqueryset = Group.objects.filter(~Q(id__in=judged_group), Q(grouptype=homework.homeworktype))
 
         queryset = filter_class(request.GET, queryset=taskqueryset).qs
+        queryset = TasklistSearchFilter().filter_queryset(request=self.request, queryset=queryset, view=self)
 
         page = self.paginate_queryset(queryset)
         if page is not None:

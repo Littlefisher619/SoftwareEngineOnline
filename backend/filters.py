@@ -1,4 +1,5 @@
 import django_filters
+from rest_framework.filters import SearchFilter
 
 from backend.models import *
 
@@ -19,3 +20,17 @@ class UserFilter(django_filters.FilterSet):
     class Meta:
         model = User
         fields = ("stuname", "stuid", "id",)
+
+
+class TasklistSearchFilter(SearchFilter):
+    def get_search_fields(self, view, request):
+        if 'pk' in view.kwargs:
+            pk = view.kwargs['pk']
+            homework = HomeWork.objects.get(id=pk)
+            if homework.homeworktype == HomeWork.SIGNGLE:
+                return ["^stuname", "^stuid"]
+            elif homework.homeworktype in [HomeWork.DOUBLE, HomeWork.GROUP]:
+                return ["^leader__stuname", "^groupname", "^leader__stuid"]
+        else:
+            return []
+
