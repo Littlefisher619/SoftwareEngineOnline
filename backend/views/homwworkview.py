@@ -8,7 +8,7 @@ from backend.serializers.authserializers import UserInfoSerializer
 from backend.serializers.groupserializers import GroupInfoSerializer
 from backend.serializers.homworkserializer import HomeWorkSerializer
 from backend.models import HomeWork, User, Judgement, Group
-from backend.filters import GroupFilter, UserFilter, TasklistSearchFilter
+from backend.filters import GroupFilter, UserFilter, TasklistSearchFilter, JudgementFilter
 import json
 
 class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin,
@@ -63,7 +63,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
         pass
 
     @action(methods=['GET'], url_path='statistics', detail=True)
-    def statics(self, request, pk=None):
+    def statistics(self, request, pk=None):
         if self.request.user.role != User.TEST_GROUP:
             return Response({
                 'success': False,
@@ -71,7 +71,8 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
             }, status=status.HTTP_403_FORBIDDEN)
 
         homework = self.get_object()
-        judgements = Judgement.objects.filter(homework=homework)
+        alljudgements = Judgement.objects.filter(homework=homework)
+        judgements = JudgementFilter(request.GET, queryset=alljudgements).qs
 
         totalscore = {
             'min': None,
@@ -80,6 +81,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
             'exclude': 0,
             'ranges': [
                 {
+                    'name': '>100',
                     'from': 100,
                     'to': None,
                     'count': 0,
@@ -90,6 +92,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
         for i in range(0, 3):
             totalscore['ranges'].append(
                 {
+                    'name': f'[{i*20},{(i+1)*20})',
                     'from': i*20,
                     'to': i*20 + 19,
                     'count': 0,
@@ -99,6 +102,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
         for i in range(60, 100, 5):
             totalscore['ranges'].append(
                 {
+                    'name': f'[{i},{i+5})',
                     'from': i,
                     'to': i + 4,
                     'count': 0,
