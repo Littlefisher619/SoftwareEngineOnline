@@ -42,8 +42,8 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
                 'message': '你已经是当前队伍类型的组长了，不能再创建新的队伍'
             }, status=status.HTTP_200_OK)
 
-        for data in Group.objects.filter(grouptype=serializer.validated_data['grouptype']).values('members', flat=True):
-            if self.request.user.pk in json.loads(data):
+        for data in Group.objects.filter(grouptype=serializer.validated_data['grouptype']).values('members'):
+            if self.request.user.pk in json.loads(data['members']):
                 return Response({
                     'success': False,
                     'message': '你已经是当前队伍类型的某个组的组员，不能再创建新的队伍'
@@ -87,8 +87,8 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
                 'message': '你已经是当前队伍类型的组长了，不能再加入其它队伍'
             }, status=status.HTTP_200_OK)
 
-        for member_list in Group.objects.filter(grouptype=grouptype).values('members', flat=True):
-            if self.request.user.pk in json.loads(member_list):
+        for member_list in Group.objects.filter(grouptype=grouptype).values('members'):
+            if self.request.user.pk in json.loads(member_list['members']):
                 return Response({
                     'success': False,
                     'message': '你已经是当前队伍类型的某个组的组员，不能再加入其它队伍'
