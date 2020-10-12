@@ -28,7 +28,7 @@ class JudgementViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Re
             return JudgementInfoSerializer
 
     def update(self, request, *args, **kwargs):
-        if self.request.user != self.get_object().judger:
+        if not self.request.user.is_superuser and self.request.user != self.get_object().judger:
             return Response({
                     'success': False,
                     'message': '只能修改自己创建的评分'
