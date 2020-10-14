@@ -9,5 +9,5 @@ class HomeWorkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HomeWork
-        fields = ('id', 'title', 'homeworktype', 'scorerules', 'author', 'blogurl')
+        fields = ('id', 'title', 'homeworktype', 'scorerules', 'weight', 'author', 'blogurl')
         read_only_fields = ('id', 'author', )

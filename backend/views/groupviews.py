@@ -113,4 +113,3 @@ class GroupViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
                     'data':  self.get_serializer(group).data
                 }, status=status.HTTP_200_OK
             )
-

@@ -17,7 +17,7 @@ class UserAdmin(admin.ModelAdmin):
 
 class HomeWorkAdmin(admin.ModelAdmin):
     list_per_page = 10
-    list_display = ['id', 'title', 'homeworktype', 'author', ]
+    list_display = ['id', 'title', 'homeworktype', 'author', 'weight']
     list_filter = ['homeworktype', ]
 
 
@@ -53,8 +53,13 @@ class JudgementAdmin(admin.ModelAdmin):
 
 
 
+class RateAdmin(admin.ModelAdmin):
+    list_per_page = 10
+    list_display = ['id', 'group', 'homework', 'ratedetail', ]
+    list_filter = ['homework', 'group', ]
 
 admin.site.register(User, UserAdmin)
 admin.site.register(HomeWork, HomeWorkAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Judgement, JudgementAdmin)
+admin.site.register(Rate, RateAdmin)

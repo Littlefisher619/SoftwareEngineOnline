@@ -34,3 +34,8 @@ class TasklistSearchFilter(SearchFilter):
         else:
             return []
 
+
+class RateFilter(django_filters.FilterSet):
+    class Meta:
+        model = Rate
+        fields = ("group", "homework",)

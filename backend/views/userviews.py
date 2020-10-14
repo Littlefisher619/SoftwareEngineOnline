@@ -1,6 +1,7 @@
 import json
 
 from django.core.mail import send_mail, EmailMessage
+from django.db.models import Q
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -12,6 +13,8 @@ from backend.serializers.userserializers import *
 from backend.serializers.judgementserializers import *
 
 import hashlib
+import json
+
 from os import urandom
 
 class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixins.ListModelMixin):
@@ -133,3 +136,101 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
             'success': True,
             'message': '密码重置成功！'
         }, status=status.HTTP_200_OK)
+
+    @action(methods=['GET'], detail=False, name='排行榜')
+    def rank(self, request):
+        def get_and_append_if_not_exist(student, rankdict):
+            if student.id not in rankdict:
+                rankdict[student.id] = UserSimpleSerializer(student).data
+                rankdict[student.id]['scoredetail'] = []
+                rankdict[student.id]['totalscore'] = 0.00
+            if student.id not in has_score:
+                has_score[student.id] = {}
+            return rankdict[student.id]
+
+        def append_record(student, homework, score, rank_item, factor=1.00):
+
+            if score is not None:
+                if homework.homeworktype != HomeWork.SINGLE:
+                    factor *= 10
+                score = score * homework.weight * factor
+                score = round(score, 2)
+                rank_item['scoredetail'].append({
+                    'homework': homework.id,
+                    'weight': homework.weight,
+                    'factor': factor,
+                    'score': score
+                })
+
+                rank_item['totalscore'] =  round(rank_item['totalscore']+score, 2)
+                has_score[student.id][homework.id] = True
+            else:
+                rank_item['scoredetail'].append({
+                    'homework': homework.id,
+                    'weight': homework.weight,
+                    'factor': None,
+                    'score': None
+                })
+                has_score[student.id][homework.id] = False
+
+        judgements = Judgement.objects.select_related('homework', 'group', 'student')
+        allstudents = User.objects.all()
+        rank_excludes = User.objects.filter(~Q(role__in=[User.GROUP_MEMBER, User.GROUP_LEADER]))
+        homeworks = HomeWork.objects.all()
+
+        rank = {}
+        has_score = {}
+        for judgement in judgements:
+            student = judgement.student
+            group = judgement.group
+
+            homework = judgement.homework
+
+            if student:
+                rank_item = get_and_append_if_not_exist(student, rank)
+                append_record(student, homework, judgement.totalscore, rank_item)
+            elif group:
+                group_members = json.loads(group.members)
+                group_members.append(group.leader)
+                if group.grouptype == Group.GROUP:
+                    rate = []
+                    try:
+                        rate = json.loads(Rate.objects.get(group=group, homework=homework).ratedetail)
+                    except Rate.DoesNotExist:
+                        pass
+                    for rate_item in rate:
+                        try:
+                            pk = rate_item['member']
+                            student = User.objects.get(pk=pk)
+                            rate_factor = rate_item['rate']
+                            rank_item = get_and_append_if_not_exist(student, rank)
+                            append_record(student, homework, judgement.totalscore, rank_item, rate_factor/100.00)
+                        except User.DoesNotExist:
+                            pass
+
+                elif group.grouptype == Group.DOUBLE:
+                    for member in group_members:
+                        pk = member
+                        student = User.objects.get(pk=pk)
+                        rank_item = get_and_append_if_not_exist(student, rank)
+                        append_record(student, homework, judgement.totalscore, rank_item, 0.50)
+
+        for student in allstudents:
+            rank_item = get_and_append_if_not_exist(student, rank)
+            for homework in homeworks:
+                if homework.id not in has_score[student.id]:
+                    append_record(student, homework, None, rank_item)
+
+        for student in rank_excludes:
+            if student.id in rank:
+                rank.pop(student.id)
+
+        rankdata = list(rank.values())
+        rankdata.sort(key=lambda rank_item: rank_item['totalscore'], reverse=True)
+        count = 1
+        for i in rankdata:
+            i['rank'] = count
+            i['scoredetail'].sort(key=lambda scoredetail: scoredetail['homework'])
+            count += 1
+
+        return Response(rankdata, status=status.HTTP_200_OK)

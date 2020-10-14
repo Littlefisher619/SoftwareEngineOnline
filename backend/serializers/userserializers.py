@@ -11,6 +11,13 @@ class UserInfoSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class UserSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'stuid', 'stuname', )
+        read_only_fields = fields
+
+
 class UserUpdatePasswordSerializer(serializers.ModelSerializer):
     password = CharField(min_length=8, max_length=32, label='密码', required=True)
 

@@ -59,6 +59,7 @@ class HomeWork(models.Model):
     createat = models.DateTimeField(u'创建时间', auto_now_add=True)
     homeworktype = models.PositiveSmallIntegerField(verbose_name="作业类型", choices=TYPE_CHOICES, default=SINGLE)
     blogurl = models.URLField(u'博客园链接', blank=True, default='#')
+    weight = models.IntegerField(verbose_name="作业权重", default=0)
 
     def __str__(self):
         return f"作业({self.id}) - {self.title}"
@@ -150,7 +151,7 @@ class Rate(models.Model):
 
     id = models.BigAutoField(primary_key=True, editable=False)
     group = models.ForeignKey(Group, related_name='rate_group', verbose_name='对应组', on_delete=models.CASCADE, null=True)
-    owner = models.ForeignKey(User, related_name='rate_owner_user', verbose_name='对应学生', on_delete=models.CASCADE)
-    rate = models.PositiveSmallIntegerField(verbose_name='评分', null=True)
-    rater = models.ForeignKey(User, related_name='rater_user', verbose_name='评分人', on_delete=models.CASCADE)
+    ratedetail = models.TextField(u'评分详情', blank=True)
+    homework = models.ForeignKey(HomeWork, related_name='rate_homework', verbose_name='对应作业',
+                                 on_delete=models.CASCADE, null=True)
     createat = models.DateTimeField(u'创建时间', auto_now=True)
