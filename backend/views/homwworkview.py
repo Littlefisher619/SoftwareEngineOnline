@@ -47,7 +47,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
         elif homework.homeworktype in [homework.GROUP, homework.DOUBLE]:
             serializer_class = GroupInfoSerializer
             filter_class = GroupFilter
-            judged_group = Judgement.objects.filter(homework=homework).values_list('student', flat=True)
+            judged_group = Judgement.objects.filter(homework=homework).values_list('group', flat=True)
             taskqueryset = Group.objects.filter(~Q(id__in=judged_group), Q(grouptype=homework.homeworktype))
 
         queryset = filter_class(request.GET, queryset=taskqueryset).qs
@@ -73,6 +73,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
         homework = self.get_object()
         alljudgements = Judgement.objects.filter(homework=homework)
         judgements = JudgementFilter(request.GET, queryset=alljudgements).qs
+        scorerules = json.loads(homework.scorerules)
 
         totalscore = {
             'min': None,
@@ -159,8 +160,20 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
                 p['avg'] += score
 
         totalscore['avg'] = round(totalscore['avg'] / (len(judgements)-totalscore['exclude'])*1.00, 2)
-        for pointname, point in points.items():
-            point['avg'] = round(point['avg'] / (len(judgements) - point['exclude'])*1.00, 2)
+        for rule in scorerules:
+            if rule['point'] not in points:
+                continue
+            point_item = points[rule['point']]
+            point_val = rule['max']
+            if point_val == 0:
+                point_item['avg'] = round(
+                    point_item['avg'] * 1.00 / (len(judgements) - point_item['exclude']), 2
+                )
+                continue
+            point_item['max'] = round(point_item['max'] * 1.00 / point_val, 2)
+            point_item['min'] = round(point_item['min'] * 1.00 / point_val, 2)
+            point_item['avg'] = round(point_item['avg']*1.00 / (rule['max'] * (len(judgements) - point_item['exclude'])), 2)
+
 
         return Response({
             'totalscore': totalscore,

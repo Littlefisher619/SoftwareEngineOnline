@@ -191,7 +191,7 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
                 append_record(student, homework, judgement.totalscore, rank_item)
             elif group:
                 group_members = json.loads(group.members)
-                group_members.append(group.leader)
+                group_members.append(group.leader.pk)
                 if group.grouptype == Group.GROUP:
                     rate = []
                     try:
