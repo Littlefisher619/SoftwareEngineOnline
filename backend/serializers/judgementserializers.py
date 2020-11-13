@@ -16,12 +16,15 @@ class JudgementUpdateSerializer(serializers.ModelSerializer):
         scoredetail = JsonSerializer().to_representation(attrs.get('scoredetail'))
 
         try:
+            assert isinstance(scoredetail, dict), "评分数据必须是Dict类型的数据"
             assert len(scoredetail) == 3, "数据字段数量不正确"
+
             bonus = scoredetail['bonus']
             points = scoredetail['scorepoints']
 
             totalscore = 0.0
             for point in points:
+                assert isinstance(point, dict), "评分项目必须是Dict类型的数据"
                 assert len(point) == 2, "数据字段数量不正确"
                 assert re.match(r'^\d+\.\d+$', point['point']) is not None, "point字段格式需为X.Y"
                 totalscore += point['score']
