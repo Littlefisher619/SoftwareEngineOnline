@@ -31,14 +31,15 @@ class RateCreateSerializer(serializers.ModelSerializer):
         members_in_group = json.loads(group.members)
 
         try:
-            print(members_in_group)
-            print(group.leader)
             assert isinstance(ratedetail, list), "评分信息必须是一个列表"
             total_rate = 0
             member_count = 0
             for data in ratedetail:
+                assert isinstance(data, dict), "评分项目必须是Dict类型的数据"
+                assert len(data) == 2, "数据字段数量不正确"
                 member = data['member']
                 rate = data['rate']
+                assert data.keys
                 assert isinstance(rate, int) and 0 <= rate <= 100, "评分必须是[0,100]间的整数"
                 assert member in members_in_group or member == group.leader.id, "只能对自己以及组员评分"
                 total_rate += rate
@@ -47,9 +48,9 @@ class RateCreateSerializer(serializers.ModelSerializer):
             assert total_rate == 100, "评分的总和必须为100"
 
         except KeyError:
-             raise serializers.ValidationError("提交的评分信息不正确")
+             raise serializers.ValidationError("提交的评分信息缺少重要字段")
         except TypeError:
-             raise serializers.ValidationError("提交的评分信息不正确")
+             raise serializers.ValidationError("提交的评分信息数据类型不正确")
         except AssertionError as e:
             raise serializers.ValidationError(e.__str__())
         except json.decoder.JSONDecodeError:

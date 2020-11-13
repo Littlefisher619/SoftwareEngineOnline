@@ -6,7 +6,7 @@ from .authserializers import UserInfoSerializer
 from .groupserializers import GroupInfoSerializer
 from .homworkserializer import HomeWorkSerializer
 from .jsonserializer import JsonSerializer
-
+import re
 
 class JudgementUpdateSerializer(serializers.ModelSerializer):
     scoredetail = JsonSerializer(label='评分详情')
@@ -14,23 +14,30 @@ class JudgementUpdateSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         super().validate(attrs)
         scoredetail = JsonSerializer().to_representation(attrs.get('scoredetail'))
+
         try:
+            assert len(scoredetail) == 3, "数据字段数量不正确"
             bonus = scoredetail['bonus']
             points = scoredetail['scorepoints']
+
             totalscore = 0.0
             for point in points:
+                assert len(point) == 2, "数据字段数量不正确"
+                assert re.match(r'^\d+\.\d+$', point['point']) is not None, "point字段格式需为X.Y"
                 totalscore += point['score']
             totalscore *= (1 + bonus)
             if totalscore < 0:
                 totalscore = 0
             totalscore = round(totalscore, 2)
             attrs['totalscore'] = totalscore
-
-
+            scoredetail['score'] = totalscore
+            attrs['scoredetail'] = JsonSerializer().to_internal_value(totalscore)
+        except AssertionError as e:
+            raise serializers.ValidationError(e.__str__())
         except KeyError:
-             raise serializers.ValidationError("提交的评分信息不正确")
+             raise serializers.ValidationError("提交的评分信息缺少重要字段")
         except TypeError:
-             raise serializers.ValidationError("提交的评分信息不正确")
+             raise serializers.ValidationError("提交的评分信息数据类型不正确")
         return attrs
 
     class Meta:
