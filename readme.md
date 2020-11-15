@@ -8,6 +8,13 @@
 * 作业类型：单人作业、结对作业、团队项目
 * 组队类型：结对队伍、团队队伍
 
+## Requirements
+
+* Python: 3.7.8
+* Django: 3.1.1
+* DjangoRestFramework: 3.11.1
+* MySQLClient: 2.0.1
+
 ## Features
 
 基本功能：
@@ -38,6 +45,49 @@ pip install -r requirements.txt
 python manage.py makemigrations
 python manage.py migrate
 python manage.py collectstatic
+```
+
+在settings.py配好邮件服务和数据库：
+```python
+
+DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # },
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'seonline',
+        'USER': 'seonline',
+        'PASSWORD': 'seonline',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
+}
+
+# ...
+
+
+# Email
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'configureit'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'seonline@localhost'
+EMAIL_HOST_PASSWORD = 'password'
+DEFAULT_FROM_EMAIL = '软工在线<seonline@localhost>'
+```
+
+根据需要配CORS(不建议在生产环境中ALLOW_ALL)：
+
+```
+# CORS_ORIGIN_WHITELIST = (
+#     '127.0.0.1:8080',
+#     'localhost:8080',
+# )
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 ```
 
 创建uwsgi_params，填入以下内容
