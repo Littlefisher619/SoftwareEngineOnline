@@ -9,19 +9,14 @@ sys.path.append(pwd)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'SoftwareEngineOnline.settings') # VueSt是自己的项目名称
 django.setup()
 
-HOMEWORK_ID = 5
-JUDGER_ID = 6
-GROUP_ID_COL = 0
-BLOG_URL_COL = 1
-SCOREPOINT_COL_FROM = 2
-SCOREPOINT_COL_TO = 7
+
 CSV_FILENAME = 'score_hw5.csv'
 
 from backend.models import *
-if __name__ == '__main__':
+
+def import_data():
     file = open(CSV_FILENAME, 'r', encoding='utf-8')
     csvdata = csv.reader(file)
-
     count = 0
     fixed_row = None
     for i in csvdata:
@@ -61,7 +56,7 @@ if __name__ == '__main__':
                     scoredetail = jsonstr,
                     totalscore = scoredetail['score'] * (1.0 + scoredetail['bonus']),
                     homework_id = HOMEWORK_ID,
-                    blogurl = i[GROUP_ID_COL],
+                    blogurl = i[BLOG_URL_COL],
                     judger_id = JUDGER_ID,
                 ).save()
         except Group.DoesNotExist:
@@ -69,3 +64,19 @@ if __name__ == '__main__':
 
         count += 1
 
+def resolve_args(argv):
+    global HOMEWORK_ID, JUDGER_ID, GROUP_ID_COL, BLOG_URL_COL, SCOREPOINT_COL_FROM, SCOREPOINT_COL_TO, CSV_FILENAME
+    CSV_FILENAME = sys.argv[1]
+    HOMEWORK_ID = sys.argv[2]
+
+    resolve = lambda key, default = None : int(argv[argv.index(key)] + 1) if key in argv else default
+
+    GROUP_ID_COL = resolve('--groupid', 0)
+    BLOG_URL_COL = resolve('--blog', 1)
+    JUDGER_ID = resolve('--judger', 6)
+    SCOREPOINT_COL_FROM = resolve('--from', 2)
+    SCOREPOINT_COL_TO= resolve('--to', 4)
+
+if __name__ == '__main__':
+    resolve_args(argv=sys.argv)
+    import_data()
