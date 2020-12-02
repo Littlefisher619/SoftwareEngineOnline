@@ -34,7 +34,7 @@ class JudgementUpdateSerializer(serializers.ModelSerializer):
             totalscore = round(totalscore, 2)
             attrs['totalscore'] = totalscore
             scoredetail['score'] = totalscore
-            attrs['scoredetail'] = JsonSerializer().to_internal_value(totalscore)
+            attrs['scoredetail'] = JsonSerializer().to_internal_value(scoredetail)
         except AssertionError as e:
             raise serializers.ValidationError(e.__str__())
         except KeyError:
