@@ -34,11 +34,12 @@ def import_data():
             scoredetail['scorepoints'].append(
                 {
                     "point": fixed_row[col],
-                    "score": float(i[col]),
+                    "score": round(float(i[col]),2),
                 }
             )
             scoredetail['score'] += float(i[col])
 
+        scoredetail['score'] = round(scoredetail['score'], 2)
         jsonstr = json.dumps(scoredetail)
 
         try:
@@ -47,14 +48,14 @@ def import_data():
                 judgement = Judgement.objects.get(homework_id=HOMEWORK_ID, group_id=groupid)
                 print(groupid, 'judged yet! Now updating...')
                 judgement.scoredetail = jsonstr
-                judgement.totalscore = scoredetail['score'] * (1.0 + scoredetail['bonus'])
+                judgement.totalscore = round(scoredetail['score'] * (1.0 + scoredetail['bonus']), 2)
                 judgement.blogurl = i[BLOG_URL_COL]
                 judgement.save()
             except Judgement.DoesNotExist:
                 Judgement(
                     group_id = groupid,
                     scoredetail = jsonstr,
-                    totalscore = scoredetail['score'] * (1.0 + scoredetail['bonus']),
+                    totalscore = round(scoredetail['score'] * (1.0 + scoredetail['bonus']), 2),
                     homework_id = HOMEWORK_ID,
                     blogurl = i[BLOG_URL_COL],
                     judger_id = JUDGER_ID,
@@ -69,7 +70,7 @@ def resolve_args(argv):
     CSV_FILENAME = sys.argv[1]
     HOMEWORK_ID = sys.argv[2]
 
-    resolve = lambda key, default = None : int(argv[argv.index(key)] + 1) if key in argv else default
+    resolve = lambda key, default = None : int(argv[argv.index(key)+1]) if key in argv else default
 
     GROUP_ID_COL = resolve('--groupid', 0)
     BLOG_URL_COL = resolve('--blog', 1)
