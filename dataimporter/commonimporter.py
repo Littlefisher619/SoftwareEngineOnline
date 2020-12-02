@@ -34,12 +34,11 @@ def import_data():
             scoredetail['scorepoints'].append(
                 {
                     "point": fixed_row[col],
-                    "score": round(float(i[col]),2),
+                    "score": int(round(float(i[col]), 0)),
                 }
             )
             scoredetail['score'] += float(i[col])
 
-        scoredetail['score'] = round(scoredetail['score'], 2)
         jsonstr = json.dumps(scoredetail)
 
         try:

@@ -27,6 +27,8 @@ class JudgementUpdateSerializer(serializers.ModelSerializer):
                 assert isinstance(point, dict), "评分项目必须是Dict类型的数据"
                 assert len(point) == 2, "数据字段数量不正确"
                 assert re.match(r'^\d+\.\d+$', point['point']) is not None, "point字段格式需为X.Y"
+                assert isinstance(point['score'], int), "score字段需为整数"
+
                 totalscore += point['score']
             totalscore *= (1 + bonus)
             if totalscore < 0:
@@ -82,17 +84,25 @@ class JudgementCreateSerializer(serializers.ModelSerializer):
             points = scoredetail['scorepoints']
             totalscore = 0.0
             for point in points:
+                assert isinstance(point, dict), "评分项目必须是Dict类型的数据"
+                assert len(point) == 2, "数据字段数量不正确"
+                assert re.match(r'^\d+\.\d+$', point['point']) is not None, "point字段格式需为X.Y"
+                assert isinstance(point['score'], int), "score字段需为整数"
                 totalscore += point['score']
+
             totalscore *= (1 + bonus)
             if totalscore < 0:
                 totalscore = 0
 
             totalscore = round(totalscore, 2)
             attrs['totalscore'] = totalscore
+            attrs['scoredetail'] = JsonSerializer().to_internal_value(scoredetail)
         except KeyError:
              raise serializers.ValidationError("提交的评分信息不正确")
         except TypeError:
              raise serializers.ValidationError("提交的评分信息不正确")
+        except AssertionError as e:
+            raise serializers.ValidationError(e.__str__())
 
         return attrs
 
