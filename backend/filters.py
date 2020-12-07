@@ -39,3 +39,8 @@ class RateFilter(django_filters.FilterSet):
     class Meta:
         model = Rate
         fields = ("group", "homework",)
+
+class HomeworkFilter(django_filters.FilterSet):
+    class Meta:
+        model = HomeWork
+        fields = ("homeworktype", )

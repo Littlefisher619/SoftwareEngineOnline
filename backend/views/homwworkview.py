@@ -1,6 +1,7 @@
 from django.db.models import Q
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
@@ -8,7 +9,7 @@ from backend.serializers.authserializers import UserInfoSerializer
 from backend.serializers.groupserializers import GroupInfoSerializer
 from backend.serializers.homworkserializer import HomeWorkSerializer
 from backend.models import HomeWork, User, Judgement, Group
-from backend.filters import GroupFilter, UserFilter, TasklistSearchFilter, JudgementFilter
+from backend.filters import GroupFilter, UserFilter, TasklistSearchFilter, JudgementFilter, HomeworkFilter
 import json
 
 class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin,
@@ -18,7 +19,9 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
     }
     serializer_class = HomeWorkSerializer
     queryset = HomeWork.objects.all()
-    filter_backend = (TasklistSearchFilter,)
+    filter_class = HomeworkFilter
+    filter_backend = (SearchFilter, TasklistSearchFilter)
+    pagination_class = None
 
     def get_permissions(self):
         return [permission() for permission in self.permission_classes_by_action.get(self.action, [IsAuthenticated])]
