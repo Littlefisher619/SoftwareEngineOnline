@@ -1,0 +1,51 @@
+{
+  "id": "2065678",
+  "name": "soft",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "11136453",
+      "name": "皇冠 冠军",
+      "font_class": "huangguanguanjun",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "15136526",
+      "name": "右双书名号",
+      "font_class": "youshuangshuminghao",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "15136527",
+      "name": "右双书名号",
+      "font_class": "youshuangshuminghao1",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "225266",
+      "name": "旗子",
+      "font_class": "qizi",
+      "unicode": "ec5a",
+      "unicode_decimal": 60506
+    },
+    {
+      "icon_id": "9730917",
+      "name": "团 队.svg ",
+      "font_class": "tuanduisvg",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "3237837",
+      "name": "方块",
+      "font_class": "fangkuai-32",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    }
+  ]
+}
