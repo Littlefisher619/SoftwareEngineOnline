@@ -153,6 +153,7 @@ class UserViewSetNormal(viewsets.GenericViewSet, mixins.RetrieveModelMixin, mixi
             if score is not None:
                 if homework.homeworktype != HomeWork.SINGLE:
                     factor *= 10
+                factor = round(factor, 3)
                 score = score * homework.weight * factor
                 score = round(score, 2)
                 rank_item['scoredetail'].append({
