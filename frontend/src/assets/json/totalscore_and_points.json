@@ -1,0 +1,161 @@
+{
+    "totalscore": {
+        "min": 10.0,
+        "max": 93.0,
+        "avg": 69.05,
+        "exclude": 16,
+        "ranges": [
+            {
+                "name": ">100",
+                "from": 100,
+                "to": null,
+                "count": 0
+            },
+            {
+                "name": "[0,20)",
+                "from": 0,
+                "to": 19,
+                "count": 19
+            },
+            {
+                "name": "[20,40)",
+                "from": 20,
+                "to": 39,
+                "count": 10
+            },
+            {
+                "name": "[40,60)",
+                "from": 40,
+                "to": 59,
+                "count": 10
+            },
+            {
+                "name": "[60,65)",
+                "from": 60,
+                "to": 64,
+                "count": 3
+            },
+            {
+                "name": "[65,70)",
+                "from": 65,
+                "to": 69,
+                "count": 13
+            },
+            {
+                "name": "[70,75)",
+                "from": 70,
+                "to": 74,
+                "count": 12
+            },
+            {
+                "name": "[75,80)",
+                "from": 75,
+                "to": 79,
+                "count": 14
+            },
+            {
+                "name": "[80,85)",
+                "from": 80,
+                "to": 84,
+                "count": 16
+            },
+            {
+                "name": "[85,90)",
+                "from": 85,
+                "to": 89,
+                "count": 14
+            },
+            {
+                "name": "[90,95)",
+                "from": 90,
+                "to": 94,
+                "count": 9
+            },
+            {
+                "name": "[95,100)",
+                "from": 95,
+                "to": 99,
+                "count": 0
+            }
+        ]
+    },
+    "points": [
+        {
+            "point": "1.1",
+            "max": 3,
+            "min": 1,
+            "avg": 2.46,
+            "exclude": 0
+        },
+        {
+            "point": "1.2",
+            "max": 6,
+            "min": 1,
+            "avg": 4.55,
+            "exclude": 0
+        },
+        {
+            "point": "1.3",
+            "max": 18,
+            "min": 1,
+            "avg": 12.02,
+            "exclude": 0
+        },
+        {
+            "point": "1.4",
+            "max": 12,
+            "min": 1,
+            "avg": 7.18,
+            "exclude": 12
+        },
+        {
+            "point": "1.5",
+            "max": 12,
+            "min": 1,
+            "avg": 7.58,
+            "exclude": 5
+        },
+        {
+            "point": "1.6",
+            "max": 6,
+            "min": 1,
+            "avg": 3.57,
+            "exclude": 13
+        },
+        {
+            "point": "1.7",
+            "max": 6,
+            "min": 1,
+            "avg": 4.53,
+            "exclude": 1
+        },
+        {
+            "point": "2.1",
+            "max": 20,
+            "min": 1,
+            "avg": 12.53,
+            "exclude": 1
+        },
+        {
+            "point": "2.2",
+            "max": 10,
+            "min": 1,
+            "avg": 6.88,
+            "exclude": 1
+        },
+        {
+            "point": "2.3",
+            "max": 10,
+            "min": 1,
+            "avg": 6.94,
+            "exclude": 1
+        },
+        {
+            "point": "2.4",
+            "max": -2,
+            "min": -40,
+            "avg": -12.0,
+            "exclude": 65
+        }
+    ]
+}
