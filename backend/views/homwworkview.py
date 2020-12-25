@@ -21,7 +21,7 @@ class HomeWorkViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Cre
     queryset = HomeWork.objects.all()
     filter_class = HomeworkFilter
     filter_backend = (SearchFilter, TasklistSearchFilter)
-    pagination_class = None
+    # pagination_class = None
 
     def get_permissions(self):
         return [permission() for permission in self.permission_classes_by_action.get(self.action, [IsAuthenticated])]
